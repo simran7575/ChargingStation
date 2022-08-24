@@ -1,14 +1,13 @@
-import { View, Text, StyleSheet } from "react-native";
-import BottomPopup from "../../../components/BottomPopup";
+import { View, StyleSheet } from "react-native";
 import TitleText from "../../../components/TitleText";
 import { titleStyle } from "../../../constants/Color";
 import CustomButton from "../../signupscreen/signupComponents/CustomButton";
 import { Colors } from "../../../constants/Color";
 
 // create a component
-const StopAlert = ({ isModalShown, stopNo, stopYes }) => {
+const StopAlert = ({ stopNo, stopYes }) => {
   return (
-    <BottomPopup isModalShown={isModalShown}>
+    <View style={styles.container}>
       <TitleText textstyle={titleStyle.title17center}>
         Are you sure you want to stop?
       </TitleText>
@@ -29,12 +28,21 @@ const StopAlert = ({ isModalShown, stopNo, stopYes }) => {
           YES
         </CustomButton>
       </View>
-    </BottomPopup>
+    </View>
   );
 };
 
 // define your styles
 const styles = StyleSheet.create({
+  container: {
+    backgroundColor: Colors.white,
+    width: "100%",
+    borderTopLeftRadius: 18,
+    borderTopRightRadius: 18,
+    paddingTop: 24,
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+  },
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "center",

@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Pressable } from "react-native";
 import Card from "../../signupscreen/signupComponents/Card";
 import ContactContainer from "../../contactusscreen/contactusComponents/ContactContainer";
 import Status from "../../../components/Status";
+import { getFormattedDate } from "../../../utils/date";
 
 // create a component
 const RenderListItem = ({ item }) => {
@@ -10,11 +11,24 @@ const RenderListItem = ({ item }) => {
 
   const showDetailsScreen = () => {
     if (item.status == "Cancelled" || item.status == "Completed") {
-      navigation.navigate("BookingSummary");
+      navigation.navigate("BookingSummary", {
+        bookingId: item._id,
+        status: item.status,
+      });
+    } else if (item.status == "Upcoming") {
+      navigation.navigate("BookingDetails", {
+        bookingId: item._id,
+        status: item.status,
+      });
     } else {
-      navigation.navigate("BookingDetails", { goToHistory: true });
+      navigation.navigate("ChargingTransaction", {
+        bookingId: item._id,
+        status: item.status,
+      });
     }
   };
+
+  const formattedDate = getFormattedDate(new Date(item.createdAt));
   return (
     <Card style={styles.card} innerStyle={styles.innerCard}>
       <Pressable
@@ -22,25 +36,25 @@ const RenderListItem = ({ item }) => {
         onPress={showDetailsScreen}
       >
         <View style={styles.titleContainer}>
-          <Text style={styles.title}>{item.id}</Text>
+          <Text style={styles.title}>{`B#${item._id.slice(18, 24)}`}</Text>
           <Status scale="small">{item.status}</Status>
         </View>
 
         <ContactContainer
           name="Location"
-          description={item.location}
+          description={item.socket.address}
           icon={require("../../../assets/icons/placeholder.png")}
           scale="small"
         />
         <ContactContainer
           name={"Date & Time"}
-          description={item.dateAndTime}
+          description={formattedDate}
           icon={require("../../../assets/icons/date.png")}
           scale="small"
         />
         <ContactContainer
           name="Bill Amount"
-          description={item.billAmount}
+          description={item.cost}
           icon={require("../../../assets/icons/rupee.png")}
           scale="small"
         />

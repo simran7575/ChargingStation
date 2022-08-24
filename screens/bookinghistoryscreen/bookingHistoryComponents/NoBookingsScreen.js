@@ -1,29 +1,17 @@
 //import liraries
-import React, { useLayoutEffect } from "react";
+import { useNavigation } from "@react-navigation/native";
 import { View, Text, StyleSheet, Image } from "react-native";
-import HeaderIcon from "../../components/HeaderIcon";
-import { Colors, titleStyle } from "../../constants/Color";
-import CustomButton from "../signupscreen/signupComponents/CustomButton";
+import { Colors } from "../../../constants/Color";
+import CustomButton from "../../signupscreen/signupComponents/CustomButton";
 
 // create a component
-const NotificationsScreen = ({ navigation }) => {
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerLeft: () => (
-        <View style={titleStyle.stackheader}>
-          <HeaderIcon
-            navigation={navigation}
-            source={require("../../assets/icons/back-white.png")}
-          />
-        </View>
-      ),
-    });
-  });
+const NoBookings = () => {
+  const navigation = useNavigation();
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>
         <Image
-          source={require("../../assets/images/3973477.png")}
+          source={require("../../../assets/images/3973477.png")}
           style={styles.image}
         />
       </View>
@@ -61,4 +49,4 @@ const styles = StyleSheet.create({
 });
 
 //make this component available to the app
-export default NotificationsScreen;
+export default NoBookings;

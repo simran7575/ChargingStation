@@ -1,55 +1,48 @@
-import { useState } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { titleStyle } from "../../../constants/Color";
-import BottomPopup from "../../../components/BottomPopup";
 import TitleText from "../../../components/TitleText";
 import CustomButton from "../../signupscreen/signupComponents/CustomButton";
 import { Colors } from "../../../constants/Color";
 
 // create a component
-const CancellingSheet = ({
-  isModalShown,
-  removeCancelScreen,
-  finalBookingCancel,
-}) => {
-  const cancelBookingConfirmed = () => {
-    finalBookingCancel();
-  };
+const LogoutAlert = ({ logoutNo, logoutYes }) => {
+  return (
+    <View style={styles.container}>
+      <TitleText textstyle={titleStyle.title17center}>
+        Are you sure you want to logout?
+      </TitleText>
 
-  let items = (
-    <>
-      <TitleText textstyle={titleStyle.title17}>
-        Are you sure you want to cancel this booking?
-      </TitleText>
-      <TitleText textstyle={titleStyle.text12}>
-        {
-          "Lorem Ipsum is some dummy text of the printing\nand typesetting industry. Lorem Ipsum has been\nthe industry's standard tummy text. "
-        }
-      </TitleText>
       <View style={styles.buttonContainer}>
         <CustomButton
           styleouter={styles.secondarybutton}
           textstyle={styles.buttonText}
-          onPress={removeCancelScreen}
+          onPress={logoutNo}
         >
           NO
         </CustomButton>
         <CustomButton
           styleouter={styles.button}
           textstyle={styles.buttonText}
-          onPress={cancelBookingConfirmed}
+          onPress={logoutYes}
         >
           YES
         </CustomButton>
       </View>
-    </>
+    </View>
   );
-
-  return <BottomPopup isModalShown={isModalShown}>{items}</BottomPopup>;
 };
 
 // define your styles
 const styles = StyleSheet.create({
+  container: {
+    backgroundColor: Colors.white,
+    width: "100%",
+    borderTopLeftRadius: 18,
+    borderTopRightRadius: 18,
+    paddingTop: 24,
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+  },
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "center",
@@ -63,7 +56,6 @@ const styles = StyleSheet.create({
     maxWidth: 170,
     backgroundColor: Colors.gray3,
   },
-
   button: {
     paddingHorizontal: 24,
     paddingTop: 5,
@@ -75,14 +67,7 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 16,
   },
-  cancelContainer: {
-    alignItems: "center",
-  },
-  cancelText: {
-    color: Colors.red,
-    marginVertical: 24,
-  },
 });
 
 //make this component available to the app
-export default CancellingSheet;
+export default LogoutAlert;

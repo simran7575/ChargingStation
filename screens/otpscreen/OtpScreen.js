@@ -1,47 +1,34 @@
-import { useState, useEffect, useRef } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  KeyboardAvoidingView,
-  Pressable,
-} from "react-native";
+import { useState, useEffect, useContext } from "react";
+import { View, StyleSheet, Alert } from "react-native";
 import SetBackground from "../../components/SetBackground";
-import Card from "../signupscreen/signupComponents/Card";
 import Images from "../../constants/Images";
-import { Colors } from "../../constants/Color";
-import OTPTextView from "react-native-otp-textinput";
-import CustomButton from "../signupscreen/signupComponents/CustomButton";
+import {
+  validateOtpForSignUp,
+  validateOtpForLogin,
+  sendOtpForLogin,
+  getUserDetails,
+} from "../../api-services/ApiServices";
+import LoadingOverlay from "../../components/LoadingOverlay";
+import OtpForm from "./otpComponents/OtpForm";
+import { AuthContext } from "../../store/auth-context";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-function OtpScreen() {
+let firstName, lastName, email, phone, timervalue;
+function OtpScreen({ navigation, route }) {
   const [internalVal, setInternalVal] = useState("");
+  const [resendPassword, setResendPassword] = useState(false);
+  const [invalidOtp, setInvalidOtp] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [timer, setTimer] = useState(null);
   const [counter, setCounter] = useState(59);
   const [isTimerOver, setIsTimerOver] = useState(false);
-  const [resendPassword, setResendPassword] = useState(false);
-  const [invalidOtp, setInvalidOtp] = useState("");
-  let input1 = useRef(null);
+
+  const authCtx = useContext(AuthContext);
+
+  const isSignup = route.params.isSignUp;
 
   const onChangeText = (val) => {
     setInternalVal(val);
-  };
-
-  const validateOtp = () => {
-    if (internalVal.toString().length == 0) {
-      setInvalidOtp("Field Required");
-      return;
-    } else if (internalVal.toString().length < 6) {
-      setInvalidOtp("Invalid OTP");
-      return;
-    }
-  };
-
-  const clear = () => {
-    input1.clear();
-    setInternalVal("");
-    setCounter(59);
-    setIsTimerOver(false);
-    setResendPassword(true);
   };
 
   const tick = () => {
@@ -50,11 +37,11 @@ function OtpScreen() {
 
   useEffect(() => {
     if (counter != 0) {
-      let timer = setInterval(tick, 1000);
-      setTimer(timer);
+      timervalue = setInterval(tick, 1000);
+      setTimer(timervalue);
     }
     return () => {
-      clearInterval(timer);
+      clearInterval(timervalue);
     };
   }, [resendPassword]);
 
@@ -62,9 +49,78 @@ function OtpScreen() {
     if (counter <= 0) {
       setIsTimerOver(true);
       setResendPassword(false);
-      clearInterval(timer);
+      clearInterval(timervalue);
     }
   }, [counter]);
+
+  async function resendPasswordHandler() {
+    setResendPassword(true);
+    setInternalVal("");
+    setCounter(59);
+    setIsTimerOver(false);
+    setIsLoading(true);
+    try {
+      phone = route.params.phone;
+      if (isSignup) {
+        const response = await sendOtpForLogin(phone, false);
+      } else {
+        const response = await sendOtpForLogin(phone, true);
+      }
+      setIsLoading(false);
+    } catch (error) {
+      console.log(error);
+      Alert.alert("Authentication Failed!", " please try again later!");
+      setIsLoading(false);
+    }
+  }
+
+  async function onPressHandler() {
+    if (internalVal.toString().length < 6) {
+      setInvalidOtp(true);
+      return;
+    }
+    setIsLoading(true);
+    try {
+      let res, token, user;
+      if (isSignup) {
+        firstName = route.params.firstName;
+        lastName = route.params.lastName;
+        email = route.params.email;
+        phone = route.params.phone;
+        res = await validateOtpForSignUp(
+          phone,
+          internalVal,
+          firstName,
+          lastName,
+          email
+        );
+        token = res.data.token;
+      } else {
+        phone = route.params.phone;
+        res = await validateOtpForLogin(phone, internalVal);
+        token = res.data.token;
+      }
+
+      if (res.data.success) {
+        const response = await getUserDetails(token);
+        if (response.data.success) {
+          authCtx.authenticate(token);
+          authCtx.addUserDetails(response.data.user);
+        }
+      } else {
+        setInvalidOtp(true);
+        setIsLoading(false);
+        return;
+      }
+    } catch (error) {
+      Alert.alert("Authentication Failed!", " please try again later!");
+      setIsLoading(false);
+    }
+  }
+
+  if (isLoading) {
+    return <LoadingOverlay />;
+  }
 
   return (
     <View style={styles.container}>
@@ -72,50 +128,14 @@ function OtpScreen() {
         upperImage={Images.loginUpper}
         lowerImage={Images.loginBottom}
       ></SetBackground>
-
-      <Card>
-        <KeyboardAvoidingView
-          keyboardVerticalOffset={50}
-          behavior="padding"
-          style={styles.avoidingView}
-        >
-          <Text style={styles.descriptionText}>
-            Please enter the verification code sent to your mobile
-          </Text>
-          <Text style={styles.textlabel}>Enter 6 digit code</Text>
-          <View style={styles.otpcontainer}>
-            <OTPTextView
-              ref={(e) => (input1 = e)}
-              handleTextChange={(e) => {
-                setInvalidOtp("");
-                onChangeText(e);
-              }}
-              textInputStyle={styles.roundedTextInput}
-              inputCount={6}
-              tintColor={Colors.teal}
-              offTintColor={Colors.gray}
-            />
-          </View>
-          <View style={styles.errorContainer}>
-            <Text style={styles.error}> {invalidOtp}</Text>
-
-            <View style={styles.timerContainer}>
-              {!isTimerOver ? (
-                <Text style={styles.timer}>
-                  00:{counter.toString().length == 2 ? counter : "0" + counter}
-                </Text>
-              ) : (
-                <Pressable onPress={clear}>
-                  <Text style={styles.resend}>Resend</Text>
-                </Pressable>
-              )}
-            </View>
-          </View>
-          <View style={styles.submitButton}>
-            <CustomButton onPress={validateOtp}>VERIFY</CustomButton>
-          </View>
-        </KeyboardAvoidingView>
-      </Card>
+      <OtpForm
+        onChangeText={onChangeText}
+        invalidOtp={invalidOtp}
+        verifyHandler={onPressHandler}
+        isTimerOver={isTimerOver}
+        counter={counter}
+        resendPasswordHandler={resendPasswordHandler}
+      />
     </View>
   );
 }
@@ -124,47 +144,6 @@ function OtpScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  descriptionText: {
-    fontSize: 16,
-    fontFamily: "poppins-regular",
-  },
-  otpcontainer: {
-    marginBottom: 6,
-  },
-
-  roundedTextInput: {
-    width: 40,
-    borderBottomWidth: 1.5,
-  },
-  textlabel: {
-    marginTop: 24,
-    fontSize: 14,
-    fontFamily: "poppins-regular",
-  },
-  timerContainer: {
-    flexDirection: "row-reverse",
-  },
-  resend: {
-    fontSize: 15,
-    color: Colors.teal,
-    fontFamily: "poppins-medium",
-  },
-  submitButton: {
-    position: "absolute",
-    bottom: -63,
-    left: 0,
-    right: 0,
-    alignItems: "center",
-  },
-  errorContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  error: {
-    color: "red",
-    fontFamily: "poppins-regular",
-    fontSize: 12,
   },
 });
 

@@ -1,13 +1,10 @@
-import { useState, useEffect } from "react";
 import {
   View,
-  Text,
   StyleSheet,
   ImageBackground,
   Dimensions,
   Image,
 } from "react-native";
-import Card from "../screens/signupscreen/signupComponents/Card";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
@@ -37,6 +34,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "space-between",
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: Dimensions.get("window").width,
+    height: Dimensions.get("window").height,
   },
 
   upperimage: {

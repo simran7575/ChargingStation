@@ -12,22 +12,22 @@ const ConfirmBooking = ({ data, cancelBooking, finalBooking }) => {
       <TitleText textstyle={styles.title}>Booking Overview</TitleText>
       <ContactContainer
         name="Location"
-        description={data.location}
+        description={data.address}
         icon={require("../../../assets/icons/placeholder.png")}
       />
       <ContactContainer
         name="No of available sockets"
-        description={data.noOfAvailableSockets}
+        description="10"
         icon={require("../../../assets/icons/power-plug.png")}
       />
       <ContactContainer
         name="Distance from current location"
-        description={data.distanceFromCurrentLocation}
+        description={data.distance}
         icon={require("../../../assets/icons/meter.png")}
       />
       <ContactContainer
         name="Estimated cost for full charge"
-        description={data.estimatedCostForFullCharge}
+        description="100"
         icon={require("../../../assets/icons/rupee1.png")}
       />
       <View style={styles.buttonContainer}>

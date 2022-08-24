@@ -62,4 +62,7 @@ export const titleStyle = {
   pressed: {
     opacity: 0.7,
   },
+  stackheader: {
+    marginRight: 24,
+  },
 };

@@ -1,13 +1,21 @@
-import { View, Text, StyleSheet, Image } from "react-native";
+import { useContext } from "react";
+import { View, Text, StyleSheet, Image, Pressable } from "react-native";
 import {
   DrawerContentScrollView,
   DrawerItemList,
+  DrawerItem,
 } from "@react-navigation/drawer";
 import { Colors } from "../constants/Color";
 import { Ionicons } from "@expo/vector-icons";
+import { AuthContext } from "../store/auth-context";
 
 // create a component
 const CustomDrawer = (props) => {
+  const authCtx = useContext(AuthContext);
+  const userData = authCtx.user.userDetails;
+  const logOut = () => {
+    authCtx.logout();
+  };
   return (
     <View style={styles.container}>
       <DrawerContentScrollView
@@ -27,12 +35,24 @@ const CustomDrawer = (props) => {
             </View>
           </View>
           <View style={styles.textContainer}>
-            <Text style={styles.nametext}>Rohit Kumar</Text>
-            <Text style={styles.numbertext}>+91 90123456</Text>
+            <Text style={styles.nametext}>
+              {userData.firstname + " " + userData.lastname}
+            </Text>
+            <Text style={styles.numbertext}>{userData.phone}</Text>
           </View>
         </View>
         <View style={styles.middle}>
           <DrawerItemList {...props} />
+          <Pressable
+            style={({ pressed }) => [styles.logout, pressed && styles.pressed]}
+            onPress={logOut}
+          >
+            <Image
+              source={require("../assets/icons/logout.png")}
+              style={styles.icon}
+            />
+            <Text style={styles.label}>Logout</Text>
+          </Pressable>
         </View>
       </DrawerContentScrollView>
     </View>
@@ -92,6 +112,25 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     marginTop: 12,
+  },
+  icon: {
+    width: 28,
+    height: 28,
+    marginRight: 50,
+  },
+  label: {
+    fontSize: 18,
+    fontFamily: "poppins-medium",
+  },
+  logout: {
+    flexDirection: "row",
+    paddingHorizontal: 30,
+    paddingVertical: 16,
+    marginHorizontal: 8,
+    borderRadius: 8,
+  },
+  pressed: {
+    backgroundColor: Colors.gray2,
   },
 });
 

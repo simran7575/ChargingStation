@@ -1,18 +1,24 @@
 import { useLayoutEffect, useState, useCallback } from "react";
-import { StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 import HeaderIcon from "../../components/HeaderIcon";
+import LoadingOverlay from "../../components/LoadingOverlay";
+import { titleStyle } from "../../constants/Color";
 import Map from "../chargenowscreen/chargeNowComponents/Map";
 
 // create a component
 function ChargeNow({ navigation }) {
   const [pickedLocation, setPickedLocation] = useState();
+  const [isBooking, setIsBooking] = useState(false);
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
-        <HeaderIcon
-          navigation={navigation}
-          source={require("../../assets/icons/back-white.png")}
-        />
+        <View style={titleStyle.stackheader}>
+          <HeaderIcon
+            navigation={navigation}
+            source={require("../../assets/icons/back-white.png")}
+          />
+        </View>
       ),
     });
   });
@@ -20,9 +26,13 @@ function ChargeNow({ navigation }) {
     setPickedLocation(location);
   }, []);
 
+  if (isBooking) {
+    return <LoadingOverlay />;
+  }
+
   return (
     <>
-      <Map onPickLocation={pickLocationHandler} />
+      <Map onPickLocation={pickLocationHandler} setIsBooking={setIsBooking} />
     </>
   );
 }

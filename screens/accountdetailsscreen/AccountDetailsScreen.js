@@ -1,13 +1,17 @@
-import { useLayoutEffect } from "react";
-import { View, Text, StyleSheet, Image } from "react-native";
+import { useLayoutEffect, useState, useEffect, useContext } from "react";
+import { View, Text, StyleSheet, Image, Alert } from "react-native";
 import { Colors } from "../../constants/Color";
 import ContactContainer from "../contactusscreen/contactusComponents/ContactContainer";
 import Card from "../signupscreen/signupComponents/Card";
 import HeaderIcon from "../../components/HeaderIcon";
 import { Ionicons } from "@expo/vector-icons";
+import { AuthContext } from "../../store/auth-context";
 
 // create a component
 function AccountDetails({ navigation }) {
+  const authCtx = useContext(AuthContext);
+  const userData = authCtx.user.userDetails;
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
@@ -40,28 +44,18 @@ function AccountDetails({ navigation }) {
           <Text style={styles.title}>Account Details</Text>
           <ContactContainer
             name="Name"
-            description="Rohith"
+            description={userData.firstname + " " + userData.lastname}
             icon={require("../../assets/icons/user-1.png")}
           />
           <ContactContainer
             name="Email"
-            description="rohit@gmail.com"
+            description={userData.email ? userData.email : "______________"}
             icon={require("../../assets/icons/letter.png")}
           />
           <ContactContainer
             name="Phone No"
-            description="+91 90123456"
+            description={userData.phone}
             icon={require("../../assets/icons/phone-call.png")}
-          />
-          <ContactContainer
-            name="Date of Birth"
-            description="19-07-1997"
-            icon={require("../../assets/icons/date.png")}
-          />
-          <ContactContainer
-            name="Location"
-            description="Coimbatore"
-            icon={require("../../assets/icons/map.png")}
           />
         </Card>
       </View>

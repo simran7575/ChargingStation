@@ -1,20 +1,35 @@
 //import liraries
-import React, { useLayoutEffect, useState } from "react";
+import React, { useLayoutEffect, useState, useEffect, useContext } from "react";
 import { View, StyleSheet, ScrollView, Image, Alert } from "react-native";
 import Card from "../signupscreen/signupComponents/Card";
 import HeaderIcon from "../../components/HeaderIcon";
 import { Colors, titleStyle } from "../../constants/Color";
 import TitleText from "../../components/TitleText";
 import ContactContainer from "../contactusscreen/contactusComponents/ContactContainer";
-import { BookingDetailsData } from "../../data/BookingDetailsData";
+import { BottomSheet } from "@rneui/themed";
 import CustomButton from "../signupscreen/signupComponents/CustomButton";
 import CancellingSheet from "./bookingDetailsComponents/CancellingSheet";
+import LoadingOverlay from "../../components/LoadingOverlay";
+import {
+  getBookingDetails,
+  cancelMyBooking,
+} from "../../api-services/ApiServices";
+import { AuthContext } from "../../store/auth-context";
+import BookingCancelSheet from "./bookingDetailsComponents/BookingCancelSheet";
 
 // create a component
 const BookingDetails = ({ route, navigation }) => {
   const [currentDisplayScreen, setCurrentDisplayScreen] = useState("main");
-  const isChargingCompleted = route.params ? true : false;
+  const [isLoading, setIsLoading] = useState(false);
+  const [bookingData, setBookingData] = useState();
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+  //const isChargingCompleted = route.params ? true : false;
   // const goToHistory = route.params.goToHistory == true ? true : false;
+
+  const authCtx = useContext(AuthContext);
+  const token = authCtx.user.token;
+  const bookingId = route.params.bookingId;
+  const currentStatus = route.params.status;
 
   const cancelBooking = () => {
     setCurrentDisplayScreen("cancel");
@@ -23,34 +38,72 @@ const BookingDetails = ({ route, navigation }) => {
   const removeCancelScreen = () => {
     setCurrentDisplayScreen("main");
   };
-  const finalBookingCancel = () => {
+
+  async function finalBookingCancel() {
     setCurrentDisplayScreen("main");
-    navigation.navigate("Home");
-  };
+    setIsLoading(true);
+    try {
+      const response = await cancelMyBooking(token, bookingId);
+      setIsLoading(false);
+      if (!response.data.success) {
+        return;
+      }
+      setShowCancelConfirm(true);
+    } catch (error) {
+      console.log(error);
+      Alert.alert("Error in Cancelling Bookings!", " please try again later!");
+      setIsLoading(false);
+    }
+  }
   const startCharging = () => {
-    navigation.navigate("ChargingTransaction");
+    navigation.navigate("ChargingTransaction", {
+      bookingId: bookingData._id,
+      status: "Upcoming",
+    });
   };
   const navigationHandler = () => {
-    if (isChargingCompleted) {
-      navigation.navigate("Home");
-    } else if (goToHistory) {
-      navigation.navigate("BookingHistory");
-    } else {
-      undefined;
-    }
+    navigation.navigate("Home");
   };
+
+  useEffect(() => {
+    async function loadBookingSummary() {
+      setIsLoading(true);
+      try {
+        const response = await getBookingDetails(token, bookingId);
+        if (response.data.success) {
+          setBookingData(response.data.booking);
+
+          setIsLoading(false);
+        } else {
+          setIsLoading(false);
+          return;
+        }
+      } catch (error) {
+        console.log(error);
+        Alert.alert("Error in loading Bookings!", " please try again later!");
+        setIsLoading(false);
+      }
+    }
+
+    loadBookingSummary();
+  }, []);
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
-        <HeaderIcon
-          navigation={navigation}
-          source={require("../../assets/icons/back-white.png")}
-          onPress={navigationHandler}
-        />
+        <View style={titleStyle.stackheader}>
+          <HeaderIcon
+            navigation={navigation}
+            source={require("../../assets/icons/back-white.png")}
+            onPress={navigationHandler}
+          />
+        </View>
       ),
     });
   });
+  if (isLoading || !bookingData) {
+    return <LoadingOverlay />;
+  }
 
   return (
     <>
@@ -62,22 +115,22 @@ const BookingDetails = ({ route, navigation }) => {
             </TitleText>
             <ContactContainer
               name="Booking Id"
-              description={BookingDetailsData[0].bookingId}
+              description={`B#${bookingData._id.slice(18, 24)}`}
               icon={require("../../assets/icons/booking.png")}
             />
             <ContactContainer
               name="Socket Id"
-              description={BookingDetailsData[0].socketId}
+              description={`S#${bookingData.socket._id.slice(18, 24)}`}
               icon={require("../../assets/icons/plugging.png")}
             />
             <ContactContainer
               name="Socket Address"
-              description={BookingDetailsData[0].socketAddress}
+              description={bookingData.socket.address}
               icon={require("../../assets/icons/placeholder.png")}
             />
             <ContactContainer
               name="Landmark"
-              description={BookingDetailsData[0].landmark}
+              description="__________"
               icon={require("../../assets/icons/landmark.png")}
             />
             <TitleText textstyle={titleStyle.title17}>Socket Photo</TitleText>
@@ -92,7 +145,7 @@ const BookingDetails = ({ route, navigation }) => {
             </TitleText>
             <ContactContainer
               name="Plug Type"
-              description="Plug Type A"
+              description={bookingData.socket.plugType}
               icon={require("../../assets/icons/power-plug.png")}
             />
             <TitleText textstyle={titleStyle.title17}>
@@ -105,8 +158,14 @@ const BookingDetails = ({ route, navigation }) => {
             </TitleText>
           </Card>
         </ScrollView>
+        <BottomSheet
+          isVisible={showCancelConfirm}
+          containerStyle={{ backgroundColor: "#858282AA" }}
+        >
+          <BookingCancelSheet />
+        </BottomSheet>
       </View>
-      {!isChargingCompleted && (
+      {currentStatus == "Upcoming" && (
         <View style={styles.buttonContainer}>
           <CustomButton
             styleouter={styles.secondarybutton}

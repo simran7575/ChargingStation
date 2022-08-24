@@ -2,7 +2,6 @@
 import React, { Component } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { Colors, titleStyle } from "../constants/Color";
-import CustomButton from "../screens/signupscreen/signupComponents/CustomButton";
 
 // create a component
 const Status = ({ children, scale }) => {

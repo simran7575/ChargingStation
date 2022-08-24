@@ -1,261 +1,188 @@
-import { useLayoutEffect, useState, useEffect } from "react";
-import {
-  View,
-  StyleSheet,
-  ScrollView,
-  Image,
-  Pressable,
-  Text,
-} from "react-native";
+import { useLayoutEffect, useState, useEffect, useContext } from "react";
+import { View, StyleSheet, ScrollView, Alert } from "react-native";
 import HeaderIcon from "../../components/HeaderIcon";
 import { titleStyle } from "../../constants/Color";
-import Card from "../signupscreen/signupComponents/Card";
-import { Colors } from "../../constants/Color";
-import CustomButton from "../signupscreen/signupComponents/CustomButton";
-import TitleText from "../../components/TitleText";
-import ContactContainer from "../contactusscreen/contactusComponents/ContactContainer";
-import { BookingDetailsData } from "../../data/BookingDetailsData";
 import InstructionAlert from "./chargingTransactionComponents/InstructionAlert";
 import StopAlert from "./chargingTransactionComponents/StopAlert";
+import { BottomSheet } from "@rneui/themed";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import MiddleCard from "./chargingTransactionComponents/MiddleCard";
+import BottomCard from "./chargingTransactionComponents/BottomCard";
+import UpperCard from "./chargingTransactionComponents/UpperCard";
+import {
+  getBookingDetails,
+  startCharging,
+  stopCharging,
+} from "../../api-services/ApiServices";
+import { AuthContext } from "../../store/auth-context";
+import LoadingOverlay from "../../components/LoadingOverlay";
 
 // create a component
-const ChargingTransaction = ({ navigation }) => {
-  const [currentDisplayScreen, setCurrentDisplayScreen] = useState("main");
-  const [timer, setTimer] = useState(null);
+let timervalue;
+const ChargingTransaction = ({ navigation, route }) => {
+  const [showInstructionsSheet, setShowInstructionsSheet] = useState(false);
+  const [showStopSheet, setShowStopSheet] = useState(false);
+  const [showtimer, setShowTimer] = useState(false);
+  const [timer, setTimer] = useState();
+  const [startTime, setStartTime] = useState();
+  const [endTime, setEndTime] = useState();
   const [counter, setCounter] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [bookingData, setBookingData] = useState();
 
-  const showInstructions = () => {
-    setCurrentDisplayScreen("instructions");
-  };
-  const showChargeStartScreen = () => {
-    setCurrentDisplayScreen("start");
-  };
-  const showChargeStopScreen = () => {
-    setCurrentDisplayScreen("stop");
-  };
+  const bookingId = route.params.bookingId;
+  const currentStatus = route.params.status;
+
+  const authCtx = useContext(AuthContext);
+  const token = authCtx.user.token;
+
   const moveToBookingSummary = () => {
-    navigation.navigate("BookingSummary");
+    navigation.navigate("BookingSummary", { bookingId: bookingData._id });
   };
+  const showInstructionSheet = () => {
+    setShowInstructionsSheet(true);
+  };
+  const showStopTimerSheet = () => {
+    setShowTimer(false);
+    setShowStopSheet(true);
+  };
+  const hideStopSheet = () => {
+    setShowTimer(true);
+    setShowStopSheet(false);
+  };
+  async function stopTheTimer() {
+    clearInterval(timervalue);
+    setShowStopSheet(false);
+    setEndTime(new Date());
+    setIsLoading(true);
+    try {
+      const response = await stopCharging(token, bookingId, new Date());
+      setIsLoading(false);
+      if (!response.data.success) {
+        return;
+      }
+    } catch (error) {
+      console.log(error);
+      Alert.alert("Error!", " please try again later!");
+      setIsLoading(false);
+    }
+
+    moveToBookingSummary();
+  }
+  async function startTimer() {
+    setShowInstructionsSheet(false);
+    setShowTimer(true);
+    setStartTime(new Date());
+    setIsLoading(true);
+    try {
+      const response = await startCharging(token, bookingId, new Date());
+      setIsLoading(false);
+      if (!response.data.success) {
+        return;
+      }
+    } catch (error) {
+      console.log(error);
+      Alert.alert("Error!", " please try again later!");
+      setIsLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    async function loadBookingSummary() {
+      setIsLoading(true);
+      try {
+        const response = await getBookingDetails(token, bookingId);
+        if (response.data.success) {
+          setBookingData(response.data.booking);
+          if (response.data.booking.status == "Ongoing") {
+            setStartTime(new Date(response.data.booking.chargeStartTime));
+            setShowTimer(true);
+          }
+
+          setIsLoading(false);
+        } else {
+          setIsLoading(false);
+          return;
+        }
+      } catch (error) {
+        console.log(error);
+        Alert.alert("Error in loading Bookings!", " please try again later!");
+        setIsLoading(false);
+      }
+    }
+
+    loadBookingSummary();
+  }, []);
 
   const tick = () => {
-    setCounter((prevCount) => prevCount + 1);
+    let difference = Math.floor(
+      (new Date().getTime() - startTime.getTime()) / 1000
+    );
+    setCounter(difference);
   };
 
   useEffect(() => {
-    if (currentDisplayScreen == "start") {
-      let timer = setInterval(tick, 1000);
-      setTimer(timer);
-    } else if (currentDisplayScreen == "stop") {
-      clearInterval(timer);
+    if (showtimer) {
+      timervalue = setInterval(tick, 1000);
+      setTimer(timervalue);
     }
+
     return () => {
-      clearInterval(timer);
+      clearInterval(timervalue);
     };
-  }, [currentDisplayScreen]);
+  }, [showtimer]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
-        <HeaderIcon
-          navigation={navigation}
-          source={require("../../assets/icons/back-white.png")}
-        />
+        <View style={titleStyle.stackheader}>
+          <HeaderIcon
+            navigation={navigation}
+            source={require("../../assets/icons/back-white.png")}
+          />
+        </View>
       ),
-      headerTitle:
-        currentDisplayScreen == "start"
-          ? "Charging Start"
-          : "Charging Transaction",
+      headerTitle: startTime ? "Charging Start" : "Charging Transaction",
     });
   });
-  let hour = Math.floor(counter / 60);
 
+  if (isLoading || !bookingData) {
+    return <LoadingOverlay />;
+  }
   return (
-    <View style={titleStyle.container}>
-      <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
-        <Card style={styles.card}>
-          <View style={styles.timerContainer}>
-            <Image
-              source={require("../../assets/icons/timer.png")}
-              style={styles.timerImage}
-            />
-            <View style={styles.timer}>
-              <Text style={styles.counter}>
-                {hour.toString().length < 2 ? "0" + hour : hour}
-                {" : "}
-                {(counter % 60).toString().length < 2
-                  ? "0" + (counter % 60)
-                  : counter % 60}
-              </Text>
-            </View>
-          </View>
-          <View style={styles.buttonContainer}>
-            {currentDisplayScreen == "main" ||
-            currentDisplayScreen == "instructions" ? (
-              <CustomButton
-                styleouter={styles.button}
-                textstyle={styles.buttonText}
-                onPress={showInstructions}
-              >
-                START CHARGING
-              </CustomButton>
-            ) : (
-              <View>
-                <Pressable
-                  style={({ pressed }) => [
-                    styles.stopButton,
-                    pressed && titleStyle.pressed,
-                  ]}
-                  onPress={showChargeStopScreen}
-                >
-                  <Image
-                    source={require("../../assets/icons/icon-3.png")}
-                    style={styles.stop}
-                  />
-                </Pressable>
-                <TitleText textstyle={titleStyle.description}> Stop</TitleText>
-              </View>
-            )}
-          </View>
-        </Card>
-        <Card style={styles.card}>
-          <TitleText textstyle={titleStyle.title20}>Booking Details</TitleText>
-          <ContactContainer
-            name="Booking Id"
-            description={BookingDetailsData[0].bookingId}
-            icon={require("../../assets/icons/booking.png")}
+    <SafeAreaProvider>
+      <View style={titleStyle.container}>
+        <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
+          <UpperCard
+            counter={counter}
+            starttimer={startTime}
+            showInstructionSheet={showInstructionSheet}
+            showStopSheet={showStopTimerSheet}
           />
-          <ContactContainer
-            name="Socket Id"
-            description={BookingDetailsData[0].socketId}
-            icon={require("../../assets/icons/plugging.png")}
-          />
-          <ContactContainer
-            name="Socket Address"
-            description={BookingDetailsData[0].socketAddress}
-            icon={require("../../assets/icons/placeholder.png")}
-          />
-          <ContactContainer
-            name="Landmark"
-            description={BookingDetailsData[0].landmark}
-            icon={require("../../assets/icons/landmark.png")}
-          />
-          <TitleText textstyle={titleStyle.title17}>Socket Photo</TitleText>
-          <Image
-            source={require("../../assets/images/socket.png")}
-            style={styles.socketImage}
-          />
-        </Card>
-        <Card style={styles.cardBottom}>
-          <TitleText textstyle={titleStyle.title20}>
-            Socket specific details
-          </TitleText>
-          <ContactContainer
-            name="Plug Type"
-            description="Plug Type A"
-            icon={require("../../assets/icons/power-plug.png")}
-          />
-          <TitleText textstyle={titleStyle.title17}>
-            Instructions for the user
-          </TitleText>
-          <TitleText textstyle={titleStyle.text12}>
-            {
-              "Lorem Ipsum is some dummy text of the printing\nand typesetting industry. Lorem Ipsum has been\nthe industry's standard tummy text. "
-            }
-          </TitleText>
-        </Card>
-      </ScrollView>
-      <View style={styles.popups}>
-        {currentDisplayScreen == "instructions" ? (
-          <InstructionAlert
-            isModalShown={currentDisplayScreen == "instructions"}
-            removeInstructionScreen={showChargeStartScreen}
-          />
-        ) : (
-          <StopAlert
-            isModalShown={currentDisplayScreen == "stop"}
-            stopNo={showChargeStartScreen}
-            stopYes={moveToBookingSummary}
-          />
-        )}
+          <MiddleCard data={bookingData} />
+          <BottomCard data={bookingData} />
+        </ScrollView>
+
+        <BottomSheet
+          isVisible={showInstructionsSheet}
+          containerStyle={{ backgroundColor: "#858282AA" }}
+        >
+          <InstructionAlert removeInstructionScreen={startTimer} />
+        </BottomSheet>
+
+        <BottomSheet
+          isVisible={showStopSheet}
+          containerStyle={{ backgroundColor: "#858282AA" }}
+        >
+          <StopAlert stopNo={hideStopSheet} stopYes={stopTheTimer} />
+        </BottomSheet>
       </View>
-    </View>
+    </SafeAreaProvider>
   );
 };
 
 // define your styles
-const styles = StyleSheet.create({
-  card: {
-    marginTop: 36,
-    justifyContent: "flex-start",
-    position: "relative",
-  },
-  timerImage: {
-    width: 160,
-    height: 160,
-  },
-  timerContainer: {
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  timer: {
-    position: "absolute",
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  counter: {
-    fontSize: 20,
-    fontFamily: "poppins-medium",
-    color: Colors.white,
-    letterSpacing: 1,
-  },
-  buttonContainer: {
-    justifyContent: "center",
-    marginTop: 24,
-  },
-  button: {
-    paddingHorizontal: 12,
-    paddingTop: 6,
-    paddingBottom: 4,
-    minWidth: 200,
-    maxWidth: 200,
-    backgroundColor: Colors.teal,
-  },
-
-  buttonText: {
-    fontSize: 15,
-  },
-  socketImage: {
-    width: 100,
-    height: 60,
-  },
-  cardBottom: {
-    marginVertical: 24,
-    justifyContent: "flex-start",
-    position: "relative",
-  },
-  popups: {
-    position: "absolute",
-    bottom: 20,
-  },
-  stopButton: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: Colors.lightTeal,
-    alignSelf: "center",
-    justifyContent: "center",
-    alignItems: "center",
-    marginVertical: 6,
-  },
-  stop: {
-    width: 30,
-    height: 30,
-  },
-});
+const styles = StyleSheet.create({});
 
 //make this component available to the app
 export default ChargingTransaction;

@@ -1,5 +1,5 @@
-import { useLayoutEffect } from "react";
-import { View, Text, StyleSheet, Pressable } from "react-native";
+import { useLayoutEffect, useContext } from "react";
+import { View, Text, StyleSheet, Pressable, Alert } from "react-native";
 import SetBackground from "../../components/SetBackground";
 import { Colors } from "../../constants/Color";
 import Images from "../../constants/Images";
@@ -7,9 +7,13 @@ import CardItem from "./homeScreenComponents/CardItems";
 import CustomIcon from "./homeScreenComponents/CustomIcon";
 import HeaderIcon from "../../components/HeaderIcon";
 import { Ionicons } from "@expo/vector-icons";
+import { AuthContext } from "../../store/auth-context";
 
 // create a component
 const HomeScreen = ({ navigation }) => {
+  const authCtx = useContext(AuthContext);
+  const userData = authCtx.user.userDetails;
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
@@ -43,7 +47,9 @@ const HomeScreen = ({ navigation }) => {
       <View style={styles.detailContainer}>
         <View style={styles.upperContainer}>
           <Text style={styles.welcome}>Hi</Text>
-          <Text style={styles.name}>Rohit Kumar</Text>
+          <Text style={styles.name}>
+            {userData.firstname + " " + userData.lastname}
+          </Text>
         </View>
         <View style={styles.cardContainer}>
           <CardItem onPress={() => navigation.navigate("ChargeNow")}>
@@ -52,7 +58,11 @@ const HomeScreen = ({ navigation }) => {
             />
             <Text style={styles.chargeText}>Charge Now</Text>
           </CardItem>
-          <CardItem onPress={() => navigation.navigate("ChargeLater")}>
+          <CardItem
+            onPress={() => {
+              Alert.alert("Upcoming Feature......");
+            }}
+          >
             <CustomIcon icon={require("../../assets/icons/charge-later.png")} />
             <Text style={styles.chargeText}>Charge Later</Text>
           </CardItem>

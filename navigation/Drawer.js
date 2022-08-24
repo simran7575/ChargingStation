@@ -18,11 +18,14 @@ function DrawerNavigation() {
         headerShown: true,
         headerTransparent: true,
         headerTintColor: Colors.white,
+
         headerTitleStyle: {
           fontSize: 22,
           fontFamily: "poppins-regular",
+          textAlign: "left",
         },
-        drawerActiveBackgroundColor: Colors.gray2,
+        headerLeftContainerStyle: { paddingHorizontal: 18 },
+        drawerActiveBackgroundColor: Colors.appBackground,
         drawerActiveTintColor: Colors.black,
         drawerInactiveTintColor: Colors.black,
         drawerLabelStyle: {
@@ -52,8 +55,10 @@ function DrawerNavigation() {
         name="BookingHistory"
         component={BookingHistory}
         options={{
+          unmountOnBlur: true,
           drawerLabel: "Booking History",
           headerTitle: "Booking History",
+          headerTitleAlign: "left",
           drawerIcon: ({ color, size, focused }) => (
             <Image
               source={require("../assets/icons/booking-clr.png")}
@@ -90,7 +95,7 @@ function DrawerNavigation() {
           ),
         }}
       />
-      <Drawer.Screen
+      {/* <Drawer.Screen
         name="Logout"
         component={LogoutScreen}
         options={{
@@ -101,7 +106,7 @@ function DrawerNavigation() {
             />
           ),
         }}
-      />
+      /> */}
     </Drawer.Navigator>
   );
 }

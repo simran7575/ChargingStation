@@ -1,35 +1,84 @@
-import { View, Text, StyleSheet } from "react-native";
+import { useState } from "react";
+import { View, StyleSheet, Alert } from "react-native";
+import LoadingOverlay from "../../components/LoadingOverlay";
 import SetBackground from "../../components/SetBackground";
-import TitleText from "../../components/TitleText";
-import { Colors } from "../../constants/Color";
 import Images from "../../constants/Images";
-import Card from "./signupComponents/Card";
-import CustomButton from "./signupComponents/CustomButton";
-import LabelAndInput from "./signupComponents/LabelAndInput";
+import SignUpForm from "./signupComponents/SignUpForm";
+import {
+  validatePhone,
+  validateEmail,
+  validateNames,
+  sendOtpForLogin,
+} from "../../api-services/ApiServices";
+import { API, postApi } from "../../api-services/HttpClient";
+import axios from "axios";
 
 // create a component
-function SignupScreen() {
+function SignupScreen({ navigation }) {
+  const [isLoading, setIsLoading] = useState(false);
+  const [credentialsIsvalid, setCredentialsIsvalid] = useState({
+    firstName: true,
+    lastName: true,
+    email: true,
+    phone: true,
+  });
+
+  async function signUpHandler(firstName, lastName, email, phone) {
+    const isFirstNameValid = validateNames(firstName, true);
+    const isLastNameValid = validateNames(lastName, false);
+    const isEmailValid = validateEmail(email);
+    const isPhoneValid = validatePhone(phone);
+    setCredentialsIsvalid({
+      firstName: isFirstNameValid,
+      lastName: isLastNameValid,
+      email: isEmailValid,
+      phone: isPhoneValid,
+    });
+
+    if (
+      !isFirstNameValid ||
+      !isEmailValid ||
+      !isLastNameValid ||
+      !isPhoneValid
+    ) {
+      return;
+    }
+    setIsLoading(true);
+    try {
+      const response = await sendOtpForLogin(phone, false);
+      if (response.data.success) {
+        navigation.replace("Otp", {
+          isSignUp: true,
+          firstName: firstName,
+          lastName: lastName,
+          email: email,
+          phone: phone,
+        });
+      } else {
+        Alert.alert(response.data.message, " please try again later!");
+        setIsLoading(false);
+        return;
+      }
+    } catch (error) {
+      console.log(error);
+      Alert.alert("Authentication Failed!", " please try again later!");
+      setIsLoading(false);
+    }
+  }
+
+  if (isLoading) {
+    return <LoadingOverlay message="Signing Up..." />;
+  }
   return (
     <View style={styles.container}>
       <SetBackground
         upperImage={Images.loginUpper}
         lowerImage={Images.loginBottom}
       ></SetBackground>
-      <Card>
-        <TitleText>Sign Up</TitleText>
-        <LabelAndInput label="First Name" required={true} />
-        <LabelAndInput label="Last Name" />
-        <LabelAndInput label="Email" keyboard="email-address" />
-        <LabelAndInput label="Phone No" keyboard="phone-pad" required={true} />
-        <View style={styles.message}>
-          <Text style={styles.switchscreen}>
-            Already a user?<Text style={styles.login}> LOGIN</Text>
-          </Text>
-        </View>
-        <View style={styles.submitButton}>
-          <CustomButton>NEXT</CustomButton>
-        </View>
-      </Card>
+      <SignUpForm
+        credentialsIsvalid={credentialsIsvalid}
+        signUpHandler={signUpHandler}
+      />
     </View>
   );
 }
@@ -38,28 +87,6 @@ function SignupScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-
-  submitButton: {
-    position: "absolute",
-    bottom: -32,
-    left: 0,
-    right: 0,
-    alignItems: "center",
-  },
-  message: {
-    marginVertical: 8,
-    alignItems: "center",
-  },
-  login: {
-    fontSize: 14,
-    color: Colors.teal,
-    fontWeight: "700",
-    fontFamily: "poppins-regular",
-  },
-  switchscreen: {
-    fontFamily: "poppins-regular",
-    fontSize: 13,
   },
 });
 

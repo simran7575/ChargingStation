@@ -12,16 +12,31 @@ import ChargingTransaction from "../screens/chargingtansaction/ChargingTransacti
 import BookingSummary from "../screens/bookingsummary/BookingSummary";
 
 const Stack = createNativeStackNavigator();
-function StackNavigation() {
+export function AuthStack() {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <Stack.Screen name="Signup" component={SignupScreen} />
+      <Stack.Screen name="Login" component={LoginScreen} />
+      <Stack.Screen name="Otp" component={OtpScreen} />
+    </Stack.Navigator>
+  );
+}
+
+export function AuthenticatedStackNavigation() {
   return (
     <Stack.Navigator
       screenOptions={{
         headerStyle: { backgroundColor: Colors.teal },
         headerTintColor: Colors.white,
-        headerTitleAlign: "center",
+
         headerTitleStyle: {
           fontSize: 22,
           fontFamily: "poppins-regular",
+          marginLeft: 18,
         },
       }}
     >
@@ -32,16 +47,14 @@ function StackNavigation() {
           headerShown: false,
         }}
       />
-
-      <Stack.Screen name="Signup" component={SignupScreen} />
       <Stack.Screen name="Notifications" component={NotificationsScreen} />
 
-      <Stack.Screen name="Login" component={LoginScreen} />
-      <Stack.Screen name="Otp" component={OtpScreen} />
       <Stack.Screen
         name="ChargeNow"
         component={ChargeNow}
-        options={{ headerTitle: "Charge Now" }}
+        options={{
+          headerTitle: "Charge Now",
+        }}
       />
 
       <Stack.Screen
@@ -68,5 +81,3 @@ function StackNavigation() {
     </Stack.Navigator>
   );
 }
-
-export default StackNavigation;

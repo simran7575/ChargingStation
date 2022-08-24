@@ -14,7 +14,10 @@ const HeaderIcon = ({ navigation, source, toggle, onPress }) => {
             }
       }
     >
-      <Image source={source} style={styles.menu} />
+      <Image
+        source={source}
+        style={source == 44 ? styles.menu : styles.menuback}
+      />
     </Pressable>
   );
 };
@@ -24,7 +27,12 @@ const styles = StyleSheet.create({
   menu: {
     width: 24,
     height: 24,
-    marginHorizontal: 18,
+    marginHorizontal: 6,
+  },
+  menuback: {
+    width: 24,
+    height: 24,
+    // marginRight: 24,
   },
 });
 

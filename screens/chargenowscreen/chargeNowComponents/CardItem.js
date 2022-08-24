@@ -2,41 +2,54 @@ import { View, Text, StyleSheet, Pressable } from "react-native";
 import { Colors } from "../../../constants/Color";
 import CustomButton from "../../signupscreen/signupComponents/CustomButton";
 import ContactContainer from "../../contactusscreen/contactusComponents/ContactContainer";
+import { useContext } from "react";
+import { AuthContext } from "../../../store/auth-context";
+import { getDistanceFromLatLonInKm } from "../../../utils/distance";
 
 // create a component
-const CardItem = ({ data, onPress }) => {
+const CardItem = ({ data, onPress, identity }) => {
+  const authCtx = useContext(AuthContext);
+  const lat = authCtx.user.userLocation[0];
+  const lng = authCtx.user.userLocation[1];
+  const dist = getDistanceFromLatLonInKm(
+    lat,
+    lng,
+    data.location.coordinates[0],
+    data.location.coordinates[1]
+  );
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{`Cluster ${data.id}`}</Text>
+      <Text style={styles.title}>{`Cluster ${identity}`}</Text>
 
       <ContactContainer
         name="Location"
-        description={data.location}
+        description={data.address}
         icon={require("../../../assets/icons/placeholder.png")}
         scale="small"
       />
       <ContactContainer
         name="No of available sockets"
-        description={data.noOfAvailableSockets}
+        description="10"
         icon={require("../../../assets/icons/power-plug.png")}
         scale="small"
       />
       <ContactContainer
         name="Distance from current location"
-        description={data.distanceFromCurrentLocation}
+        description={`${dist} Kms`}
         icon={require("../../../assets/icons/meter.png")}
         scale="small"
       />
       <ContactContainer
         name="Estimated cost for full charge"
-        description={data.estimatedCostForFullCharge}
+        description={100}
         icon={require("../../../assets/icons/rupee1.png")}
         scale="small"
       />
       <CustomButton
         styleouter={styles.button}
         textstyle={styles.buttonText}
-        onPress={onPress.bind(this, data)}
+        onPress={onPress.bind(this, data, dist)}
       >
         BOOK
       </CustomButton>

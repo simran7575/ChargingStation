@@ -2,20 +2,28 @@ import { View, Text, StyleSheet, TextInput } from "react-native";
 import { Colors } from "../../../constants/Color";
 
 // create a component
-function LabelAndInput({ label, keyboard = "default", required }) {
+function LabelAndInput({
+  label,
+  keyboard = "default",
+  required,
+  onUpdateValue,
+  value,
+  error,
+}) {
   return (
     <View style={styles.labelContainer}>
       <Text style={styles.labeltext}>
-        {" "}
         {label}
-        {required && <Text style={styles.star}>*</Text>}{" "}
+        {required && <Text style={styles.star}>*</Text>}
       </Text>
       <TextInput
         style={styles.input}
         keyboardType={keyboard}
         autoComplete="off"
-        //autoCapitalize="words"
+        value={value}
+        onChangeText={onUpdateValue}
       />
+      {error && <Text style={styles.error}>{`Invalid ${label}`}</Text>}
     </View>
   );
 }
@@ -32,7 +40,7 @@ const styles = StyleSheet.create({
     borderBottomColor: Colors.gray2,
     borderBottomWidth: 2,
     marginVertical: 6,
-    fontSize: 20,
+    fontSize: 18,
     fontFamily: "poppins-medium",
     color: Colors.gray4,
   },
@@ -41,6 +49,12 @@ const styles = StyleSheet.create({
   },
   star: {
     color: "red",
+  },
+  error: {
+    paddingVertical: 4,
+    fontSize: 12,
+    fontFamily: "poppins-regular",
+    color: Colors.red,
   },
 });
 
