@@ -1,5 +1,12 @@
 import { useLayoutEffect, useState, useEffect, useContext } from "react";
-import { View, Text, StyleSheet, Image, Alert } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  Alert,
+  BackHandler,
+} from "react-native";
 import HeaderIcon from "../../components/HeaderIcon";
 import Card from "../signupscreen/signupComponents/Card";
 import { Colors, titleStyle } from "../../constants/Color";
@@ -39,12 +46,24 @@ const BookingSummary = ({ navigation, route }) => {
         setIsLoading(false);
       }
     }
+    function backButtonClick() {
+      navigation.navigate("Home");
+      return true;
+    }
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backButtonClick
+    );
 
     loadBookingSummary();
-  }, []);
+    return () => {
+      backHandler.remove();
+    };
+  }, [navigation]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
+      headerTransparent: true,
       headerLeft: () => (
         <View style={titleStyle.stackheader}>
           <HeaderIcon
@@ -76,7 +95,7 @@ const BookingSummary = ({ navigation, route }) => {
           </View>
           <View style={styles.middle}></View>
           <View style={styles.titleContainer}>
-            <Text style={titleStyle.title20}>Booking Summary</Text>
+            <Text style={titleStyle.title19}>Booking Summary</Text>
             <Status>{bookingData.status}</Status>
           </View>
           <ContactContainer
@@ -187,7 +206,7 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "center",
-    marginTop: 24,
+    marginTop: 18,
   },
   secondarybutton: {
     paddingHorizontal: 12,

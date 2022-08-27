@@ -3,7 +3,7 @@ import { StatusBar } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import * as SplashScreen from "expo-splash-screen";
 import * as Font from "expo-font";
-import { fontFamilies } from "./constants/Color";
+import { Colors, fontFamilies } from "./constants/Color";
 import { AuthStack, AuthenticatedStackNavigation } from "./navigation/Stack";
 import AuthContextProvider, { AuthContext } from "./store/auth-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -81,7 +81,7 @@ export default function App() {
 
   return (
     <>
-      <StatusBar style="dark" />
+      <StatusBar barStyle="light-content" backgroundColor={Colors.black} />
       <AuthContextProvider>
         <Root />
       </AuthContextProvider>

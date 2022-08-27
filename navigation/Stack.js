@@ -6,7 +6,6 @@ import LoginScreen from "../screens/loginscreen/LoginScreen";
 import OtpScreen from "../screens/otpscreen/OtpScreen";
 import NotificationsScreen from "../screens/notificationsscreen/NotificationsScreen";
 import BookingDetails from "../screens/bookingdetails/BookingDetails";
-import ChargeLater from "../screens/chargelater/ChargeLaterScreen";
 import ChargeNow from "../screens/chargenowscreen/ChargeNowScreen";
 import ChargingTransaction from "../screens/chargingtansaction/ChargingTransaction";
 import BookingSummary from "../screens/bookingsummary/BookingSummary";
@@ -37,6 +36,8 @@ export function AuthenticatedStackNavigation() {
           fontSize: 22,
           fontFamily: "poppins-regular",
           marginLeft: 18,
+          textAlignVertical: "center",
+          includeFontPadding: false,
         },
       }}
     >
@@ -55,12 +56,6 @@ export function AuthenticatedStackNavigation() {
         options={{
           headerTitle: "Charge Now",
         }}
-      />
-
-      <Stack.Screen
-        name="ChargeLater"
-        component={ChargeLater}
-        options={{ headerTitle: "Charge Later" }}
       />
 
       <Stack.Screen

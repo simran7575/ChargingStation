@@ -7,7 +7,7 @@ import { AuthContext } from "../../../store/auth-context";
 import { getDistanceFromLatLonInKm } from "../../../utils/distance";
 
 // create a component
-const CardItem = ({ data, onPress, identity }) => {
+const CardItem = ({ data, onPress, identity, listSize }) => {
   const authCtx = useContext(AuthContext);
   const lat = authCtx.user.userLocation[0];
   const lng = authCtx.user.userLocation[1];
@@ -20,7 +20,7 @@ const CardItem = ({ data, onPress, identity }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{`Cluster ${identity}`}</Text>
+      <Text style={styles.title}>{`Cluster ${identity} / ${listSize}`}</Text>
 
       <ContactContainer
         name="Location"
@@ -71,6 +71,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.7,
     shadowRadius: 10,
+    //position: "absolute",
   },
   title: {
     fontFamily: "poppins-regular",
@@ -79,8 +80,8 @@ const styles = StyleSheet.create({
   },
   button: {
     paddingHorizontal: 36,
-    paddingTop: 2,
-    paddingBottom: 0,
+    paddingTop: 4,
+    paddingBottom: 2,
   },
 
   buttonText: {

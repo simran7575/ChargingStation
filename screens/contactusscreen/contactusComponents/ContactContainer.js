@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 12,
+    marginBottom: 11,
   },
   iconContainer: {
     marginRight: 12,
@@ -42,10 +42,15 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: "poppins-regular",
     color: Colors.gray3, //"#bdbbbb",
+    justifyContent: "center",
+    textAlignVertical: "center",
+    includeFontPadding: false,
   },
   description: {
     fontFamily: "poppins-medium",
     color: Colors.black,
+    textAlignVertical: "center",
+    includeFontPadding: false,
   },
 });
 

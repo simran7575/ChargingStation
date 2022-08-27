@@ -8,7 +8,7 @@ import CustomButton from "../../signupscreen/signupComponents/CustomButton";
 // create a component
 const ConfirmBooking = ({ data, cancelBooking, finalBooking }) => {
   return (
-    <BottomPopup isModalShown={true}>
+    <BottomPopup isModalShown={true} setIsModalShown={cancelBooking}>
       <TitleText textstyle={styles.title}>Booking Overview</TitleText>
       <ContactContainer
         name="Location"
@@ -55,9 +55,10 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: "poppins-medium",
     fontSize: 20,
-    marginBottom: 4,
-    textAlign: "left",
     marginBottom: 12,
+    textAlign: "left",
+    textAlignVertical: "center",
+    includeFontPadding: false,
   },
   buttonContainer: {
     flexDirection: "row",

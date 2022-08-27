@@ -23,6 +23,8 @@ function DrawerNavigation() {
           fontSize: 22,
           fontFamily: "poppins-regular",
           textAlign: "left",
+          textAlignVertical: "center",
+          includeFontPadding: false,
         },
         headerLeftContainerStyle: { paddingHorizontal: 18 },
         drawerActiveBackgroundColor: Colors.appBackground,
@@ -33,7 +35,7 @@ function DrawerNavigation() {
           fontFamily: "poppins-medium",
         },
         drawerStyle: {
-          width: 340,
+          width: 330,
           backgroundColor: Colors.appBackground,
         },
       }}
@@ -115,7 +117,7 @@ const styles = StyleSheet.create({
   icon: {
     width: 28,
     height: 28,
-    marginHorizontal: 18,
+    marginLeft: 18,
   },
 });
 

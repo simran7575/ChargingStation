@@ -13,7 +13,7 @@ function UpperCard({
 }) {
   const result = new Date(counter * 1000).toISOString().slice(11, 19);
   return (
-    <Card style={styles.card}>
+    <Card style={styles.card} innerStyle={styles.innerCard}>
       <View style={styles.timerContainer}>
         <Image
           source={require("../../../assets/icons/timer.png")}
@@ -60,9 +60,13 @@ function UpperCard({
 // define your styles
 const styles = StyleSheet.create({
   card: {
-    marginTop: 36,
+    marginTop: 24,
     justifyContent: "flex-start",
     position: "relative",
+  },
+  innerCard: {
+    paddingVertical: 24,
+    paddingBottom: 18,
   },
   timerImage: {
     width: 160,
@@ -73,8 +77,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   buttonContainer: {
-    justifyContent: "center",
-    marginTop: 24,
+    justifyContent: "space-between",
+    marginTop: 18,
   },
   button: {
     paddingHorizontal: 12,

@@ -1,5 +1,5 @@
 import { useLayoutEffect, useState, useEffect, useContext } from "react";
-import { View, StyleSheet, ScrollView, Alert } from "react-native";
+import { View, StyleSheet, ScrollView, Alert, BackHandler } from "react-native";
 import HeaderIcon from "../../components/HeaderIcon";
 import { titleStyle } from "../../constants/Color";
 import InstructionAlert from "./chargingTransactionComponents/InstructionAlert";
@@ -110,8 +110,19 @@ const ChargingTransaction = ({ navigation, route }) => {
         setIsLoading(false);
       }
     }
+    function backButtonClick() {
+      navigation.navigate("Home");
+      return true;
+    }
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backButtonClick
+    );
 
     loadBookingSummary();
+    return () => {
+      backHandler.remove();
+    };
   }, []);
 
   const tick = () => {
@@ -166,6 +177,9 @@ const ChargingTransaction = ({ navigation, route }) => {
         <BottomSheet
           isVisible={showInstructionsSheet}
           containerStyle={{ backgroundColor: "#858282AA" }}
+          onBackdropPress={() => {
+            setShowInstructionsSheet(false);
+          }}
         >
           <InstructionAlert removeInstructionScreen={startTimer} />
         </BottomSheet>
@@ -173,6 +187,9 @@ const ChargingTransaction = ({ navigation, route }) => {
         <BottomSheet
           isVisible={showStopSheet}
           containerStyle={{ backgroundColor: "#858282AA" }}
+          onBackdropPress={() => {
+            hideStopSheet();
+          }}
         >
           <StopAlert stopNo={hideStopSheet} stopYes={stopTheTimer} />
         </BottomSheet>

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View, StyleSheet, Alert } from "react-native";
+import { View, StyleSheet, Alert, KeyboardAvoidingView } from "react-native";
 import LoadingOverlay from "../../components/LoadingOverlay";
 import SetBackground from "../../components/SetBackground";
 import Images from "../../constants/Images";
@@ -75,6 +75,7 @@ function SignupScreen({ navigation }) {
         upperImage={Images.loginUpper}
         lowerImage={Images.loginBottom}
       ></SetBackground>
+
       <SignUpForm
         credentialsIsvalid={credentialsIsvalid}
         signUpHandler={signUpHandler}

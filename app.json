@@ -24,6 +24,8 @@
           "apiKey": "AIzaSyAfYiHwyAi-Bot3LL7zXApzXgpOoHcDUpU"
         }
       },
+      "credentialsSource": "local",
+
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
@@ -32,6 +34,11 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "65f51146-e8a1-4de9-aaa9-4eab4101b9ce"
+      }
     }
   }
 }

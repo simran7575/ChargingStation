@@ -7,8 +7,8 @@ import { titleStyle } from "../../../constants/Color";
 // create a component
 function MiddleCard({ data }) {
   return (
-    <Card style={styles.card}>
-      <TitleText textstyle={titleStyle.title20}>Booking Details</TitleText>
+    <Card style={styles.card} innerStyle={styles.innerCard}>
+      <TitleText textstyle={titleStyle.title19}>Booking Details</TitleText>
       <ContactContainer
         name="Booking Id"
         description={`B#${data._id.slice(18, 24)}`}
@@ -41,9 +41,12 @@ function MiddleCard({ data }) {
 // define your styles
 const styles = StyleSheet.create({
   card: {
-    marginTop: 36,
+    marginTop: 24,
     justifyContent: "flex-start",
     position: "relative",
+  },
+  innerCard: {
+    paddingVertical: 24,
   },
   socketImage: {
     width: 100,

@@ -45,7 +45,14 @@ const CancellingSheet = ({
     </>
   );
 
-  return <BottomPopup isModalShown={isModalShown}>{items}</BottomPopup>;
+  return (
+    <BottomPopup
+      isModalShown={isModalShown}
+      setIsModalShown={removeCancelScreen}
+    >
+      {items}
+    </BottomPopup>
+  );
 };
 
 // define your styles
@@ -53,7 +60,7 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "center",
-    marginVertical: 12,
+    marginVertical: 8,
   },
   secondarybutton: {
     paddingHorizontal: 24,

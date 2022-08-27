@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, BackHandler } from "react-native";
 import Card from "../../signupscreen/signupComponents/Card";
 import TitleText from "../../../components/TitleText";
 import ContactContainer from "../../contactusscreen/contactusComponents/ContactContainer";
@@ -7,8 +7,8 @@ import { titleStyle } from "../../../constants/Color";
 // create a component
 const BottomCard = ({ data }) => {
   return (
-    <Card style={styles.cardBottom}>
-      <TitleText textstyle={titleStyle.title20}>
+    <Card style={styles.cardBottom} innerStyle={styles.innerCard}>
+      <TitleText textstyle={titleStyle.title19}>
         Socket specific details
       </TitleText>
       <ContactContainer
@@ -34,6 +34,9 @@ const styles = StyleSheet.create({
     marginVertical: 24,
     justifyContent: "flex-start",
     position: "relative",
+  },
+  innerCard: {
+    paddingVertical: 24,
   },
 });
 

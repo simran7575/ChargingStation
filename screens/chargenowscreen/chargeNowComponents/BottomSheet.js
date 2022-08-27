@@ -5,9 +5,14 @@ import { Colors } from "../../../constants/Color";
 import CustomButton from "../../signupscreen/signupComponents/CustomButton";
 
 // create a component
-const BottomSheet = ({ closeModal, isModalShown }) => {
+const BottomSheet = ({
+  closeModal,
+  isModalShown,
+  setFetchSocketList,
+  setIsModalShown,
+}) => {
   return (
-    <BottomPopup isModalShown={isModalShown}>
+    <BottomPopup isModalShown={isModalShown} setIsModalShown={setIsModalShown}>
       <TitleText textstyle={styles.title}>Please Try Again</TitleText>
       <TitleText textstyle={styles.description}>
         {
@@ -25,7 +30,7 @@ const BottomSheet = ({ closeModal, isModalShown }) => {
         <CustomButton
           styleouter={styles.button}
           textstyle={styles.buttonText}
-          onPress={closeModal}
+          onPress={setFetchSocketList}
         >
           TRY AGAIN
         </CustomButton>

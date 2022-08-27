@@ -4,8 +4,8 @@ import { View, Text, StyleSheet } from "react-native";
 import { Colors } from "../constants/Color";
 
 // create a component
-const Divider = () => {
-  return <View style={styles.container}></View>;
+const Divider = (style) => {
+  return <View style={[styles.container, { ...style }]}></View>;
 };
 
 // define your styles
@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.gray2,
     borderRadius: 18,
     alignSelf: "center",
-    marginBottom: 36,
+    marginBottom: 18,
   },
 });
 

@@ -28,10 +28,16 @@ export const titleStyle = {
     textAlign: "left",
     marginBottom: 12,
   },
+  title19: {
+    fontFamily: "poppins-medium",
+    fontSize: 19,
+    textAlign: "left",
+    marginBottom: 6,
+  },
   title17: {
     fontFamily: "poppins-medium",
     fontSize: 17,
-    marginVertical: 4,
+    marginBottom: 4,
     textAlign: "left",
   },
   title17center: {

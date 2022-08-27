@@ -1,6 +1,13 @@
 //import liraries
 import React, { useLayoutEffect, useState, useEffect, useContext } from "react";
-import { View, StyleSheet, ScrollView, Image, Alert } from "react-native";
+import {
+  View,
+  StyleSheet,
+  ScrollView,
+  Image,
+  Alert,
+  BackHandler,
+} from "react-native";
 import Card from "../signupscreen/signupComponents/Card";
 import HeaderIcon from "../../components/HeaderIcon";
 import { Colors, titleStyle } from "../../constants/Color";
@@ -85,7 +92,20 @@ const BookingDetails = ({ route, navigation }) => {
       }
     }
 
+    function backButtonClick() {
+      navigation.navigate("Home");
+      return true;
+    }
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backButtonClick
+    );
+
     loadBookingSummary();
+
+    return () => {
+      backHandler.remove();
+    };
   }, []);
 
   useLayoutEffect(() => {
@@ -109,8 +129,8 @@ const BookingDetails = ({ route, navigation }) => {
     <>
       <View style={styles.container}>
         <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
-          <Card style={styles.card}>
-            <TitleText textstyle={titleStyle.title20}>
+          <Card style={styles.card} innerStyle={styles.innerCard}>
+            <TitleText textstyle={titleStyle.title19}>
               Booking Details
             </TitleText>
             <ContactContainer
@@ -139,8 +159,8 @@ const BookingDetails = ({ route, navigation }) => {
               style={styles.socketImage}
             />
           </Card>
-          <Card style={styles.cardBottom}>
-            <TitleText textstyle={titleStyle.title20}>
+          <Card style={styles.cardBottom} innerStyle={styles.innerCard}>
+            <TitleText textstyle={titleStyle.title19}>
               Socket specific details
             </TitleText>
             <ContactContainer
@@ -161,6 +181,10 @@ const BookingDetails = ({ route, navigation }) => {
         <BottomSheet
           isVisible={showCancelConfirm}
           containerStyle={{ backgroundColor: "#858282AA" }}
+          onBackdropPress={() => {
+            setShowCancelConfirm(false);
+            navigation.navigate("Home");
+          }}
         >
           <BookingCancelSheet />
         </BottomSheet>
@@ -211,10 +235,14 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.appBackground,
   },
   card: {
-    marginTop: 36,
+    marginTop: 32,
     justifyContent: "flex-start",
     position: "relative",
   },
+  innerCard: {
+    paddingVertical: 24,
+  },
+
   cardBottom: {
     marginVertical: 24,
     justifyContent: "flex-start",

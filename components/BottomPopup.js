@@ -1,25 +1,40 @@
 //import liraries
 import React, { useState } from "react";
-import { View, Text, StyleSheet, Modal, Dimensions } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Modal,
+  Dimensions,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+} from "react-native";
 import { Colors } from "../constants/Color";
 import Divider from "./Divider";
 
 // create a component
 const deviceHeight = Dimensions.get("window").height;
-const BottomPopup = ({ isModalShown, children }) => {
+const BottomPopup = ({ isModalShown, children, setIsModalShown }) => {
   return (
     <Modal
       animationType="slide"
       transparent={true}
       visible={isModalShown}
-      //onRequestClose={setIsModalShown ? setIsModalShown() : () => {}}
+      onRequestClose={() => {
+        setIsModalShown(false);
+      }}
     >
-      <View style={styles.container}>
-        <View style={styles.innerContainer}>
-          <Divider></Divider>
-          {children}
-        </View>
-      </View>
+      <TouchableOpacity
+        style={styles.container}
+        onPressOut={() => setIsModalShown(false)}
+      >
+        <TouchableWithoutFeedback>
+          <View style={styles.innerContainer}>
+            <Divider></Divider>
+            {children}
+          </View>
+        </TouchableWithoutFeedback>
+      </TouchableOpacity>
     </Modal>
   );
 };

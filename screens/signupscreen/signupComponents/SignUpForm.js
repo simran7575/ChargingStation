@@ -1,5 +1,11 @@
 import { useState } from "react";
-import { View, Text, StyleSheet, Pressable } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Pressable,
+  KeyboardAvoidingView,
+} from "react-native";
 import Card from "./Card";
 import TitleText from "../../../components/TitleText";
 import LabelAndInput from "./LabelAndInput";

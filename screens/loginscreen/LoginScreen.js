@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View, StyleSheet, Alert } from "react-native";
+import { View, StyleSheet, Alert, KeyboardAvoidingView } from "react-native";
 import { sendOtpForLogin, validatePhone } from "../../api-services/ApiServices";
 import { postApi, API } from "../../api-services/HttpClient";
 import LoadingOverlay from "../../components/LoadingOverlay";
@@ -46,6 +46,7 @@ function LoginScreen({ navigation }) {
         upperImage={Images.loginUpper}
         lowerImage={Images.loginBottom}
       ></SetBackground>
+
       <LoginForm phoneIsvalid={phoneIsvalid} loginHandler={loginHandler} />
     </View>
   );

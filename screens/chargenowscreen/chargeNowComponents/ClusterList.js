@@ -7,17 +7,25 @@ import ConfirmBooking from "./ConfirmBooking";
 import { AuthContext } from "../../../store/auth-context";
 import { createBooking } from "../../../api-services/ApiServices";
 
-const ClusterList = ({ setFocusedKey, listdata, setIsBooking }) => {
+const ClusterList = ({
+  setFocusedKey,
+  listdata,
+  setIsBooking,
+  setFetchSocketList,
+  setCurrentFocusedRegion,
+}) => {
   const [isModalShown, setIsModalShown] = useState(true);
   const [showConfirmBooking, setShowConfirmBooking] = useState(false);
   const [data, setData] = useState();
   const authCtx = useContext(AuthContext);
   const token = authCtx.user.token;
+  const ref = useRef(null);
 
   const navigation = useNavigation();
 
   const closeModal = () => {
     setIsModalShown(false);
+    navigation.navigate("Home");
   };
 
   const showBookingScreen = (data, dist) => {
@@ -51,14 +59,30 @@ const ClusterList = ({ setFocusedKey, listdata, setIsBooking }) => {
   }
 
   const onViewRef = useRef((viewableItems) => {
-    let focusedKey = viewableItems.viewableItems[0]["key"];
+    let focusedKey = viewableItems.viewableItems[0].key
+      ? viewableItems.viewableItems[0].key
+      : 1;
+
+    let latitude = viewableItems.viewableItems[0].item.location.coordinates[0];
+    let longitude = viewableItems.viewableItems[0].item.location.coordinates[1];
     setFocusedKey(focusedKey);
+    setCurrentFocusedRegion((prevRegion) => {
+      return { ...prevRegion, latitude, longitude };
+    });
+
     // Use viewable items in state or as intended
   });
   const viewConfigRef = useRef({ viewAreaCoveragePercentThreshold: 50 });
 
   if (listdata.length == 0) {
-    return <BottomSheet closeModal={closeModal} isModalShown={isModalShown} />;
+    return (
+      <BottomSheet
+        closeModal={closeModal}
+        isModalShown={isModalShown}
+        setFetchSocketList={setFetchSocketList}
+        setIsModalShown={setIsModalShown}
+      />
+    );
   } else if (listdata && !showConfirmBooking) {
     return (
       <FlatList
@@ -67,11 +91,13 @@ const ClusterList = ({ setFocusedKey, listdata, setIsBooking }) => {
         showsHorizontalScrollIndicator={false}
         onViewableItemsChanged={onViewRef.current}
         viewabilityConfig={viewConfigRef.current}
+        ref={ref}
         data={listdata}
         keyExtractor={(item) => listdata.indexOf(item) + 1}
         renderItem={(item) => (
           <CardItem
             data={item.item}
+            listSize={listdata.length}
             identity={listdata.indexOf(item.item) + 1}
             onPress={showBookingScreen}
           />
@@ -92,7 +118,9 @@ const ClusterList = ({ setFocusedKey, listdata, setIsBooking }) => {
 // define your styles
 const styles = StyleSheet.create({
   list: {
-    paddingHorizontal: 50,
+    paddingHorizontal: 35,
+    // position: "absolute",
+    //flex: 1,
   },
 });
 
