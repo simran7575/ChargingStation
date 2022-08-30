@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 18,
-    fontFamily: "poppins-medium",
+    fontFamily: "poppins-regular",
   },
   logout: {
     flexDirection: "row",

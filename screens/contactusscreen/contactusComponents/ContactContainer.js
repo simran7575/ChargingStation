@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
     includeFontPadding: false,
   },
   description: {
-    fontFamily: "poppins-medium",
+    fontFamily: "poppins-regular",
     color: Colors.black,
     textAlignVertical: "center",
     includeFontPadding: false,

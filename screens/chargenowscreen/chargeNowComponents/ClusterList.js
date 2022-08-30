@@ -12,7 +12,8 @@ const ClusterList = ({
   listdata,
   setIsBooking,
   setFetchSocketList,
-  setCurrentFocusedRegion,
+
+  handleChangeRegion,
 }) => {
   const [isModalShown, setIsModalShown] = useState(true);
   const [showConfirmBooking, setShowConfirmBooking] = useState(false);
@@ -59,16 +60,14 @@ const ClusterList = ({
   }
 
   const onViewRef = useRef((viewableItems) => {
-    let focusedKey = viewableItems.viewableItems[0].key
-      ? viewableItems.viewableItems[0].key
-      : 1;
+    let focusedKey =
+      viewableItems.viewableItems[0] != undefined
+        ? viewableItems.viewableItems[0].key
+        : 1;
 
-    let latitude = viewableItems.viewableItems[0].item.location.coordinates[0];
-    let longitude = viewableItems.viewableItems[0].item.location.coordinates[1];
     setFocusedKey(focusedKey);
-    setCurrentFocusedRegion((prevRegion) => {
-      return { ...prevRegion, latitude, longitude };
-    });
+
+    handleChangeRegion(focusedKey);
 
     // Use viewable items in state or as intended
   });

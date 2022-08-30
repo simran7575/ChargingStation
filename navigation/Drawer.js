@@ -32,7 +32,7 @@ function DrawerNavigation() {
         drawerInactiveTintColor: Colors.black,
         drawerLabelStyle: {
           fontSize: 18,
-          fontFamily: "poppins-medium",
+          fontFamily: "poppins-regular",
         },
         drawerStyle: {
           width: 330,

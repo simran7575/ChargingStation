@@ -71,4 +71,12 @@ export const titleStyle = {
   stackheader: {
     marginRight: 24,
   },
+
+  header: {
+    fontSize: 22,
+    fontFamily: "poppins-regular",
+    textAlignVertical: "bottom",
+    includeFontPadding: false,
+    color: Colors.white,
+  },
 };

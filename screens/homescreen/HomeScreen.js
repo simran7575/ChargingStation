@@ -106,13 +106,13 @@ const styles = StyleSheet.create({
   },
   welcome: {
     fontSize: 17,
-    fontFamily: "poppins-medium",
+    fontFamily: "poppins-regular",
     color: Colors.black,
   },
 
   name: {
     fontSize: 20,
-    fontFamily: "poppins-medium",
+    fontFamily: "poppins-regular",
     color: Colors.black,
   },
   icon: {

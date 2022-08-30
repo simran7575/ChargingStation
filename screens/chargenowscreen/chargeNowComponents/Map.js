@@ -1,6 +1,6 @@
 //import liraries
 import React, { useState, useEffect, useContext } from "react";
-import { StyleSheet, View, Alert, ActivityIndicator } from "react-native";
+import { StyleSheet, View, Alert, Dimensions } from "react-native";
 import { useIsFocused } from "@react-navigation/native";
 import * as Location from "expo-location";
 import MapView, { Marker } from "react-native-maps";
@@ -11,6 +11,7 @@ import CustomTextInput from "./CustomTextInput";
 import { socketsInRange } from "../../../api-services/ApiServices";
 import { AuthContext } from "../../../store/auth-context";
 import LoadingOverlay from "../../../components/LoadingOverlay";
+import usePrevious from "../../../components/PrevCount";
 
 // create a component
 function Map({ onPickLocation, setIsBooking }) {
@@ -28,9 +29,26 @@ function Map({ onPickLocation, setIsBooking }) {
   const isFocussed = useIsFocused();
   const authCtx = useContext(AuthContext);
   const token = authCtx.user.token;
+  const ref = React.createRef(currentPosition);
 
   const refetchSocketList = () => {
     setFetchSocketList(!fetchSocketList);
+  };
+
+  const handleChangeRegion = (focus) => {
+    clearTimeout(regionTimeOut);
+
+    const regionTimeOut = setTimeout(() => {
+      let focusedElementCoords = socketList[focus - 1].location.coordinates;
+      let focusedRegion = {
+        latitude: focusedElementCoords[0],
+        longitude: focusedElementCoords[1],
+        latitudeDelta: 0.0319,
+        longitudeDelta: 0.0129,
+      };
+
+      ref.current.animateToRegion(focusedRegion, 1000);
+    }, 10);
   };
 
   useEffect(() => {
@@ -80,13 +98,7 @@ function Map({ onPickLocation, setIsBooking }) {
         lat: location.coords.latitude,
         lng: location.coords.longitude,
       });
-      setCurrentFocusedRegion((prevRegion) => {
-        return {
-          ...prevRegion,
-          latitude: location.coords.latitude,
-          longitude: location.coords.longitude,
-        };
-      });
+
       setIsLoading(false);
     })();
     return () => {
@@ -108,9 +120,15 @@ function Map({ onPickLocation, setIsBooking }) {
   } else {
     return (
       <View style={styles.mapContainer}>
-        <MapView
+        <MapView.Animated
+          ref={ref}
           style={styles.map}
-          region={currentFocusedRegion}
+          region={{
+            latitude: currentPosition ? currentPosition.lat : 37.78,
+            longitude: currentPosition ? currentPosition.lng : -122.43,
+            latitudeDelta: 0.0319,
+            longitudeDelta: 0.0129,
+          }}
           provider={MapView.PROVIDER_GOOGLE}
           mapType="standard"
         >
@@ -128,7 +146,7 @@ function Map({ onPickLocation, setIsBooking }) {
               />
             </Marker>
           ))}
-        </MapView>
+        </MapView.Animated>
         <CustomTextInput></CustomTextInput>
 
         <View style={styles.listBottom}>
@@ -137,7 +155,7 @@ function Map({ onPickLocation, setIsBooking }) {
             listdata={socketList}
             setIsBooking={setIsBooking}
             setFetchSocketList={refetchSocketList}
-            setCurrentFocusedRegion={setCurrentFocusedRegion}
+            handleChangeRegion={handleChangeRegion}
           />
         </View>
       </View>
@@ -156,6 +174,8 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
     alignItems: "center",
     height: "100%",
+    width: Dimensions.get("window").width,
+    height: Dimensions.get("window").height - 50,
   },
   map: {
     position: "absolute",
@@ -173,7 +193,7 @@ const styles = StyleSheet.create({
   },
   listBottom: {
     position: "absolute",
-    bottom: 20,
+    bottom: 30,
     backgroundColor: "transparent",
   },
 });

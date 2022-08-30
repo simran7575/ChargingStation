@@ -1,5 +1,5 @@
 import { useLayoutEffect, useState, useCallback } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, Dimensions } from "react-native";
 import HeaderIcon from "../../components/HeaderIcon";
 import LoadingOverlay from "../../components/LoadingOverlay";
 import { titleStyle } from "../../constants/Color";
@@ -31,9 +31,7 @@ function ChargeNow({ navigation }) {
   }
 
   return (
-    <>
-      <Map onPickLocation={pickLocationHandler} setIsBooking={setIsBooking} />
-    </>
+    <Map onPickLocation={pickLocationHandler} setIsBooking={setIsBooking} />
   );
 }
 
