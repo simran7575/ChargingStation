@@ -46,6 +46,7 @@ function SignupScreen({ navigation }) {
     setIsLoading(true);
     try {
       const response = await sendOtpForLogin(phone, false);
+
       if (response.data.success) {
         navigation.replace("Otp", {
           isSignUp: true,

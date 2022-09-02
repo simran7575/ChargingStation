@@ -11,6 +11,7 @@ import ChargingTransaction from "../screens/chargingtansaction/ChargingTransacti
 import BookingSummary from "../screens/bookingsummary/BookingSummary";
 import TitleText from "../components/TitleText";
 import { StyleSheet, Dimensions, Text } from "react-native";
+import MapScreen from "../screens/mapscreen/MapScreen";
 
 const Stack = createNativeStackNavigator();
 export function AuthStack() {
@@ -78,6 +79,7 @@ export function AuthenticatedStackNavigation() {
           ),
         }}
       />
+
       <Stack.Screen
         name="ChargingTransaction"
         component={ChargingTransaction}

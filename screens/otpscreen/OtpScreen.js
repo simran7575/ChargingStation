@@ -98,6 +98,7 @@ function OtpScreen({ navigation, route }) {
       } else {
         phone = route.params.phone;
         res = await validateOtpForLogin(phone, internalVal);
+
         token = res.data.token;
       }
 

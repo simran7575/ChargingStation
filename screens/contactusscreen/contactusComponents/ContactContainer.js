@@ -51,6 +51,7 @@ const styles = StyleSheet.create({
     color: Colors.black,
     textAlignVertical: "center",
     includeFontPadding: false,
+    maxWidth: 210,
   },
 });
 

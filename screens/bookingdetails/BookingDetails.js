@@ -7,6 +7,8 @@ import {
   Image,
   Alert,
   BackHandler,
+  Text,
+  Pressable,
 } from "react-native";
 import Card from "../signupscreen/signupComponents/Card";
 import HeaderIcon from "../../components/HeaderIcon";
@@ -23,13 +25,18 @@ import {
 } from "../../api-services/ApiServices";
 import { AuthContext } from "../../store/auth-context";
 import BookingCancelSheet from "./bookingDetailsComponents/BookingCancelSheet";
+import openMap from "react-native-open-maps";
+import * as Location from "expo-location";
+import { Ionicons } from "@expo/vector-icons";
 
 // create a component
+let origin;
 const BookingDetails = ({ route, navigation }) => {
   const [currentDisplayScreen, setCurrentDisplayScreen] = useState("main");
   const [isLoading, setIsLoading] = useState(false);
   const [bookingData, setBookingData] = useState();
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+
   //const isChargingCompleted = route.params ? true : false;
   // const goToHistory = route.params.goToHistory == true ? true : false;
 
@@ -44,6 +51,60 @@ const BookingDetails = ({ route, navigation }) => {
 
   const removeCancelScreen = () => {
     setCurrentDisplayScreen("main");
+  };
+
+  async function openGoogleLink(latitude, longitude) {
+    const address = bookingData.socket.address;
+
+    openMap({
+      latitude: latitude,
+      longitude: longitude,
+      zoom: 30,
+      start: "My Location",
+      end: address,
+      mapType: "standard",
+    });
+  }
+
+  const mapScreenHandler = () => {
+    const userCoords = authCtx.user.userLocation;
+    if (userCoords.length == 0) {
+      (async () => {
+        setIsLoading(true);
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== "granted") {
+          Alert.alert(
+            "Insufficient Permissions",
+            "You need to grant location permissions to use this app!"
+          );
+          setIsLoading(false);
+          return;
+        }
+
+        let location = await Location.getCurrentPositionAsync({});
+
+        authCtx.addUserLocation([
+          location.coords.latitude,
+          location.coords.longitude,
+        ]);
+        origin = {
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
+        };
+
+        setIsLoading(false);
+        openGoogleLink(origin.latitude, origin.longitude);
+      })();
+    } else {
+      setIsLoading(true);
+      origin = {
+        latitude: userCoords[0],
+        longitude: userCoords[1],
+      };
+
+      setIsLoading(false);
+      openGoogleLink(origin.latitude, origin.longitude);
+    }
   };
 
   async function finalBookingCancel() {
@@ -143,11 +204,31 @@ const BookingDetails = ({ route, navigation }) => {
               description={`S#${bookingData.socket._id.slice(18, 24)}`}
               icon={require("../../assets/icons/plugging.png")}
             />
-            <ContactContainer
-              name="Socket Address"
-              description={bookingData.socket.address}
-              icon={require("../../assets/icons/placeholder.png")}
-            />
+            {currentStatus == "Upcoming" ? (
+              <View style={styles.direction}>
+                <ContactContainer
+                  name="Socket Address"
+                  description={bookingData.socket.address}
+                  icon={require("../../assets/icons/placeholder.png")}
+                />
+                <Pressable
+                  style={({ pressed }) => [
+                    styles.directionContainer,
+                    pressed && styles.pressed,
+                  ]}
+                  onPress={mapScreenHandler}
+                >
+                  <Ionicons name="arrow-redo" color="white" size={20} />
+                  <Text style={styles.directionText}>Directions</Text>
+                </Pressable>
+              </View>
+            ) : (
+              <ContactContainer
+                name="Socket Address"
+                description={bookingData.socket.address}
+                icon={require("../../assets/icons/placeholder.png")}
+              />
+            )}
             <ContactContainer
               name="Landmark"
               description="__________"
@@ -298,6 +379,34 @@ const styles = StyleSheet.create({
   popups: {
     position: "absolute",
     bottom: 20,
+  },
+  directionImg: {
+    width: 18,
+    height: 18,
+  },
+  direction: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+  },
+  directionContainer: {
+    flexDirection: "row",
+    backgroundColor: Colors.teal,
+    paddingTop: 1,
+    paddingHorizontal: 6,
+    borderRadius: 12,
+    marginTop: 4,
+  },
+  directionText: {
+    fontFamily: "poppins-regular",
+    fontSize: 10,
+    color: Colors.white,
+    marginLeft: 4,
+    textAlignVertical: "center",
+    includeFontPadding: false,
+  },
+  pressed: {
+    opacity: 0.7,
   },
 });
 
