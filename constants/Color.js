@@ -1,6 +1,6 @@
 export const Colors = {
-  lightTeal: "#CFFBFA",
-  teal: "#4ac1bd",
+  lightTeal: "#bff2bd",
+  teal: "#4ec14a",
   gray2: "#CECECE",
   gray4: "#858282",
   appBackground: "#f7f7f7",

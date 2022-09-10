@@ -14,16 +14,19 @@ const RenderListItem = ({ item }) => {
       navigation.navigate("BookingSummary", {
         bookingId: item._id,
         status: item.status,
+        prevScreen: "BookingHistory",
       });
     } else if (item.status == "Upcoming") {
       navigation.navigate("BookingDetails", {
         bookingId: item._id,
         status: item.status,
+        prevScreen: "BookingHistory",
       });
     } else {
       navigation.navigate("ChargingTransaction", {
         bookingId: item._id,
         status: item.status,
+        prevScreen: "BookingHistory",
       });
     }
   };

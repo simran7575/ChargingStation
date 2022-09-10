@@ -47,6 +47,7 @@ const ClusterList = ({
         navigation.navigate("BookingDetails", {
           bookingId: response.data.booking._id,
           status: "Upcoming",
+          prevScreen: "ChargeNow",
         });
       } else {
         setIsBooking(false);

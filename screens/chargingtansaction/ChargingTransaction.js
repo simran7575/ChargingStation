@@ -32,12 +32,16 @@ const ChargingTransaction = ({ navigation, route }) => {
 
   const bookingId = route.params.bookingId;
   const currentStatus = route.params.status;
+  const prevScreen = route.params.prevScreen;
 
   const authCtx = useContext(AuthContext);
   const token = authCtx.user.token;
 
   const moveToBookingSummary = () => {
-    navigation.navigate("BookingSummary", { bookingId: bookingData._id });
+    navigation.navigate("BookingSummary", {
+      bookingId: bookingData._id,
+      prevScreen: "ChargingTransaction",
+    });
   };
   const showInstructionSheet = () => {
     setShowInstructionsSheet(true);
@@ -49,6 +53,14 @@ const ChargingTransaction = ({ navigation, route }) => {
   const hideStopSheet = () => {
     setShowTimer(true);
     setShowStopSheet(false);
+  };
+
+  const navigationHandler = () => {
+    if (prevScreen == "BookingDetails") {
+      navigation.navigate("Home");
+    } else {
+      navigation.goBack();
+    }
   };
   async function stopTheTimer() {
     clearInterval(timervalue);
@@ -111,7 +123,11 @@ const ChargingTransaction = ({ navigation, route }) => {
       }
     }
     function backButtonClick() {
-      navigation.navigate("Home");
+      if (prevScreen == "BookingDetails") {
+        navigation.navigate("Home");
+      } else {
+        navigation.goBack();
+      }
       return true;
     }
     const backHandler = BackHandler.addEventListener(
@@ -150,6 +166,7 @@ const ChargingTransaction = ({ navigation, route }) => {
           <HeaderIcon
             navigation={navigation}
             source={require("../../assets/icons/back-white.png")}
+            onPress={navigationHandler}
           />
         </View>
       ),

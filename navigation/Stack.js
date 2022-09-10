@@ -9,9 +9,7 @@ import BookingDetails from "../screens/bookingdetails/BookingDetails";
 import ChargeNow from "../screens/chargenowscreen/ChargeNowScreen";
 import ChargingTransaction from "../screens/chargingtansaction/ChargingTransaction";
 import BookingSummary from "../screens/bookingsummary/BookingSummary";
-import TitleText from "../components/TitleText";
-import { StyleSheet, Dimensions, Text } from "react-native";
-import MapScreen from "../screens/mapscreen/MapScreen";
+import { Text } from "react-native";
 
 const Stack = createNativeStackNavigator();
 export function AuthStack() {

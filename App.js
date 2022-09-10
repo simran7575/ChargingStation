@@ -54,7 +54,6 @@ export default function App() {
 
         if (token) {
           const response = await getUserDetails(token);
-
           if (response.data.success) {
             authCtx.authenticate(token);
             authCtx.addUserDetails(response.data.user);

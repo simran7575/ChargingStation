@@ -26,12 +26,17 @@ const BookingSummary = ({ navigation, route }) => {
   const token = authCtx.user.token;
 
   const bookingId = route.params.bookingId;
+  const prevScreen = route.params.prevScreen;
 
   useEffect(() => {
+    let cancel = false;
     async function loadBookingSummary() {
       setIsLoading(true);
       try {
         const response = await getBookingDetails(token, bookingId);
+        if (cancel) {
+          return;
+        }
         if (response.data.success) {
           setBookingData(response.data.booking);
 
@@ -47,7 +52,11 @@ const BookingSummary = ({ navigation, route }) => {
       }
     }
     function backButtonClick() {
-      navigation.navigate("Home");
+      if (prevScreen == "ChargingTransaction") {
+        navigation.navigate("Home");
+      } else {
+        navigation.goBack();
+      }
       return true;
     }
     const backHandler = BackHandler.addEventListener(
@@ -58,6 +67,7 @@ const BookingSummary = ({ navigation, route }) => {
     loadBookingSummary();
     return () => {
       backHandler.remove();
+      cancel = true;
     };
   }, [navigation]);
 
@@ -70,7 +80,9 @@ const BookingSummary = ({ navigation, route }) => {
             navigation={navigation}
             source={require("../../assets/icons/back-white.png")}
             onPress={() => {
-              navigation.navigate("Home");
+              prevScreen == "ChargingTransaction"
+                ? navigation.navigate("Home")
+                : navigation.goBack();
             }}
           />
         </View>
@@ -139,6 +151,7 @@ const BookingSummary = ({ navigation, route }) => {
                 navigation.navigate("BookingDetails", {
                   bookingId: bookingId,
                   status: bookingData.status,
+                  prevScreen: "BookingSummary",
                 });
               }}
             >

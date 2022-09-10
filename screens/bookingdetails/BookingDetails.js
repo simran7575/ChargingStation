@@ -43,6 +43,7 @@ const BookingDetails = ({ route, navigation }) => {
   const authCtx = useContext(AuthContext);
   const token = authCtx.user.token;
   const bookingId = route.params.bookingId;
+  const prevScreen = route.params.prevScreen;
   const currentStatus = route.params.status;
 
   const cancelBooking = () => {
@@ -127,10 +128,15 @@ const BookingDetails = ({ route, navigation }) => {
     navigation.navigate("ChargingTransaction", {
       bookingId: bookingData._id,
       status: "Upcoming",
+      prevScreen: "BookingDetails",
     });
   };
   const navigationHandler = () => {
-    navigation.navigate("Home");
+    if (prevScreen == "ChargeNow") {
+      navigation.navigate("Home");
+    } else {
+      navigation.goBack();
+    }
   };
 
   useEffect(() => {
@@ -154,7 +160,11 @@ const BookingDetails = ({ route, navigation }) => {
     }
 
     function backButtonClick() {
-      navigation.navigate("Home");
+      if (prevScreen == "ChargeNow") {
+        navigation.navigate("Home");
+      } else {
+        navigation.goBack();
+      }
       return true;
     }
     const backHandler = BackHandler.addEventListener(
