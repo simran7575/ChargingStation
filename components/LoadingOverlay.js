@@ -4,7 +4,7 @@ import { Colors } from "../constants/Color";
 function LoadingOverlay({ message }) {
   return (
     <View style={styles.rootContainer}>
-      <ActivityIndicator size="large" />
+      <ActivityIndicator size="large" color={Colors.teal} />
       <Text style={styles.message}>{message}</Text>
     </View>
   );

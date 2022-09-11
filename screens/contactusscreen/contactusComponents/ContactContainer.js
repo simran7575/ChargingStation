@@ -1,9 +1,10 @@
 //import liraries
 import React from "react";
-import { View, Text, StyleSheet, Image } from "react-native";
+import { View, Text, StyleSheet, Image, Dimensions } from "react-native";
 import { Colors } from "../../../constants/Color";
 
 // create a component
+
 const ContactContainer = ({ name, description, icon, scale }) => {
   const isSmall = scale == "small";
   return (
@@ -51,7 +52,7 @@ const styles = StyleSheet.create({
     color: Colors.black,
     textAlignVertical: "center",
     includeFontPadding: false,
-    maxWidth: 210,
+    maxWidth: Dimensions.get("window").width - 220,
   },
 });
 
