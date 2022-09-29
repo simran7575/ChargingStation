@@ -49,29 +49,40 @@ function SignUpForm({ credentialsIsvalid, signUpHandler }) {
       <LabelAndInput
         label="First Name"
         required={true}
-        value={firstName}
-        onUpdateValue={updateInputValueHandler.bind(this, "firstName")}
+        textInputConfig={{
+          value: firstName,
+          onChangeText: updateInputValueHandler.bind(this, "firstName"),
+          keyboardType: "default",
+        }}
         error={!credentialsIsvalid.firstName}
       />
       <LabelAndInput
         label="Last Name"
-        value={lastName}
-        onUpdateValue={updateInputValueHandler.bind(this, "lastName")}
+        textInputConfig={{
+          value: lastName,
+          onChangeText: updateInputValueHandler.bind(this, "lastName"),
+          keyboardType: "default",
+        }}
         error={!credentialsIsvalid.lastName}
       />
       <LabelAndInput
         label="Email"
-        keyboard="email-address"
-        value={email}
-        onUpdateValue={updateInputValueHandler.bind(this, "email")}
+        textInputConfig={{
+          value: email,
+          onChangeText: updateInputValueHandler.bind(this, "email"),
+          keyboardType: "email-address",
+        }}
         error={!credentialsIsvalid.email}
       />
       <LabelAndInput
         label="Phone No"
-        keyboard="phone-pad"
         required={true}
-        value={phone}
-        onUpdateValue={updateInputValueHandler.bind(this, "phone")}
+        textInputConfig={{
+          value: phone,
+          onChangeText: updateInputValueHandler.bind(this, "phone"),
+          keyboardType: "phone-pad",
+          maxLength: 10,
+        }}
         error={!credentialsIsvalid.phone}
       />
       <View style={styles.message}>

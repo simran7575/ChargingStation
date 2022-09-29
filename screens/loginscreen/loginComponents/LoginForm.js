@@ -26,10 +26,13 @@ const LoginForm = ({ loginHandler, phoneIsvalid }) => {
       <TitleText>Login</TitleText>
       <LabelAndInput
         label="Phone No"
-        keyboard="phone-pad"
+        textInputConfig={{
+          value: phone,
+          onChangeText: updateInputValueHandler,
+          keyboardType: "phone-pad",
+          maxLength: 10,
+        }}
         required={true}
-        value={phone}
-        onUpdateValue={updateInputValueHandler}
         error={!phoneIsvalid}
       />
       <View style={styles.message}>

@@ -129,7 +129,7 @@ export function validateNames(name, required) {
 export function validateEmail(email) {
   email = email.trim();
   if (!email) {
-    return true;
+    return false;
   }
   email = email.toLowerCase();
   let letters = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;

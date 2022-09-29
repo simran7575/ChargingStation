@@ -2,27 +2,14 @@ import { View, Text, StyleSheet, TextInput } from "react-native";
 import { Colors } from "../../../constants/Color";
 
 // create a component
-function LabelAndInput({
-  label,
-  keyboard = "default",
-  required,
-  onUpdateValue,
-  value,
-  error,
-}) {
+function LabelAndInput({ label, textInputConfig, required, error }) {
   return (
     <View style={styles.labelContainer}>
       <Text style={styles.labeltext}>
         {label}
         {required && <Text style={styles.star}>*</Text>}
       </Text>
-      <TextInput
-        style={styles.input}
-        keyboardType={keyboard}
-        autoComplete="off"
-        value={value}
-        onChangeText={onUpdateValue}
-      />
+      <TextInput style={styles.input} {...textInputConfig} autoComplete="off" />
       {error && <Text style={styles.error}>{`Invalid ${label}`}</Text>}
     </View>
   );
