@@ -1,6 +1,6 @@
 import axios from "axios";
 export let API = axios.create({
-  baseURL: `https://nearby-charging-station.herokuapp.com/api/v1`,
+  baseURL: `https://nearby-charging-station.onrender.com/api/v1`,
 });
 
 export async function getApi(endPoint, headers = null, query = null) {
